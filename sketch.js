@@ -1,10 +1,6 @@
 let mapW = 2000;
 let mapH = 1000;
 
-
- 
-
-
 function preload()
 {
     sightlineImg = loadImage('assets/dotted line.png');
@@ -274,7 +270,6 @@ class level
     {
         this.shotCountSprite.text = this.shotCount
     }
-
 }
 
 class Game
@@ -301,7 +296,6 @@ class Game
             this.currLvlObj.uiElems.remove();
         }
     }
-
 }
 
 //generic level class
