@@ -1,5 +1,6 @@
 let mapW = 2000;
 let mapH = 1000;
+let fade = 0;
 
 function preload()
 {
@@ -51,6 +52,7 @@ function draw()
         }
         
     }
+    allSprites.draw();
     game.game_over();
     game.next_stage();
     //console.log(level1.platforms)
@@ -279,7 +281,7 @@ class Game
     constructor()
     {
         
-        this.lvl1ShotCount = 2;
+        this.lvl1ShotCount = 0;
         this.lvl2ShotCount = 3;
         this.gameState = 0; // start, title, run, stageclear/ gameover.
         this.levelisSetup = false;
@@ -302,15 +304,31 @@ class Game
         {
             if (this.gameOverSetup == false)
             {
-                allSprites.remove();
-                this.gameOverSprite = new Sprite();
-                this.gameOverSprite.img = gameOverImg;
-                this.gameOverSprite.collider = 'none';
-                this.gameOverSprite.x = mapW/2 
-                this.gameOverSprite.y = mapH/2
-                this.gameOverSprite.w = 500 
-                this.gameOverSprite.h = 500
+                setTimeout(() => {
+                allSprites.remove();},2000);
+                //this.gameOverSprite = new Sprite();
+                //this.gameOverSprite.img = gameOverImg;
+                //this.gameOverSprite.collider = 'none';
+                //this.gameOverSprite.x = mapW/2 
+                //this.gameOverSprite.y = mapH/2
+                //this.gameOverSprite.w = 500 
+                //this.gameOverSprite.h = 500
                 this.gameOverSetup = true;
+            }
+            //image fade in
+            if (fade <= 255)
+            {
+                push();
+                tint(255,fade);
+                image(gameOverImg,60,-25);
+                fade += 2;
+                pop();
+            }
+            else
+            {
+                push();
+                image(gameOverImg,60,-25);
+                pop();
             }
         }
     }
