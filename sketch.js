@@ -5,7 +5,13 @@ let fade = 0;
 function preload()
 {
     sightlineImg = loadImage('assets/dotted line.png');
-    gameOverImg = loadImage('assets/gameOver.png')
+    ghost1Img    = loadImage('assets/scoreGhost1.png');
+    ghost2Img    = loadImage('assets/scoreGhost2.png');
+    nextLevelImg = loadImage('assets/nextLevel.png'  );
+    gameOverImg  = loadImage('assets/gameOver.png'   );
+    pumpkin5     = loadImage('assets/punkins-5.png')
+
+
 }
 
 function setup()
@@ -25,6 +31,7 @@ function setup()
 
 function draw()
 {
+
     clear();
     background(100,100,100);
     if (game.gameState == game.run)
@@ -52,7 +59,7 @@ function draw()
         }
         
     }
-    allSprites.draw();
+    allSprites.draw()
     game.game_over();
     game.next_stage();
     //console.log(level1.platforms)
@@ -148,15 +155,25 @@ class level
     {
         this.shot = new Shot
         this.shotCount = shotCnt;
+
         this.levelSprites = new Group();
+
         this.platforms = new this.levelSprites.Group();
         this.platforms.mass = 30;
+
         this.targets = new Group();
         this.targets.rotationalDrag = 5;
+
         this.floor = new this.levelSprites.Sprite(mapW/2 + 200, mapH + 5, mapW + 500, 5, 's');
+
         this.leftbound = new this.levelSprites.Sprite(-50, mapH/2,5,mapH,'s');
         this.rightbound = new this.levelSprites.Sprite(mapW + 450, mapH/2,5,mapH,'s');
-        this.shotCountSprite = new this.levelSprites.Sprite(250,250, 20, 20, 'n');
+
+        this.shotCountSprite = new this.levelSprites.Sprite(250,250, 100, 100, 'n');
+        this.shotCountSprite.img = ghost1Img;
+        this.shotCountSprite.scale = 1.8;
+        this.shotCountSprite.offset.y = -5;
+        //this.shotScoreSprite = new this.levelSprites.Sprite();
     }
 
     // creates target on top of platform automatically
@@ -171,6 +188,7 @@ class level
     create_target(x,y,d)
     {
         let target = new this.targets.Sprite(x,y);
+        target.img = pumpkin5;
         target.d = d;
     }
 
@@ -272,7 +290,9 @@ class level
 
     UI()
     {
-        this.shotCountSprite.text = this.shotCount
+        this.shotCountSprite.textSize = 25;
+        this.shotCountSprite.text = this.shotCount;
+        this.shotCountSprite.y = (20 * Math.sin(((frameCount/150) % 20 * Math.PI))) + 100
     }
 }
 
@@ -281,7 +301,7 @@ class Game
     constructor()
     {
         
-        this.lvl1ShotCount = 0;
+        this.lvl1ShotCount = 3;
         this.lvl2ShotCount = 3;
         this.gameState = 0; // start, title, run, stageclear/ gameover.
         this.levelisSetup = false;
@@ -293,7 +313,6 @@ class Game
         this.gameOver = 4;
         this.load = 5;
         this.currLvlObj;
-        this.gameOverSprite;
         this.gameOverSetup = false;
         this.nextStageSetup = false;
     }
@@ -313,15 +332,17 @@ class Game
                 //this.gameOverSprite.y = mapH/2
                 //this.gameOverSprite.w = 500 
                 //this.gameOverSprite.h = 500
+                fade = 0;
                 this.gameOverSetup = true;
             }
+
             //image fade in
             if (fade <= 255)
             {
                 push();
                 tint(255,fade);
                 image(gameOverImg,60,-25);
-                fade += 2;
+                fade += 4;
                 pop();
             }
             else
@@ -342,11 +363,28 @@ class Game
                 this.currLvlObj.shot.shotSpriteGroup.remove();
                 this.currLvlObj.levelSprites.remove();
                 buttons.next_stage_setup();
-
+                fade = 0;
                 this.nextStageSetup = true;
             }
             buttons.next_stage_check();
+
+            if (fade <= 255)
+            {
+                push();
+                tint(255,fade);
+                image(nextLevelImg,100,-5);
+                fade += 2;
+                pop();
+            }
+            else
+            {
+                push();
+                image(nextLevelImg,100,-5);
+                pop();
+            }
+            //buttons.startNextSprite.draw();
         }
+
     }
 }
 
@@ -361,13 +399,13 @@ class Buttons
 
     next_stage_setup()
     {
-        this.startNextSprite  = new this.nextstagebuttons.Sprite(mapW/2,200,50,50,'n');
+        this.startNextSprite  = new this.nextstagebuttons.Sprite(mapW/2,900,700,150,'k');
     }
 
 
     next_stage_check()
     {
-        if(this.ispressed(this.restartButtonSprite))
+        if(this.ispressed(this.startNextSprite))
         {
             this.startNextSprite.remove();
             game.levelisSetup = false;
@@ -379,7 +417,7 @@ class Buttons
 
     ispressed(sprite)
     {
-        if (mouse.pressed(sprite))
+        if (sprite.mouse.presses())
         {
             return true;
         }
@@ -389,85 +427,6 @@ class Buttons
         }
     }
 }
-
-function Level1()
-{
-    //setup
-    if (game.levelisSetup == false)
-    {
-        game.currLvlObj = level1;
-        level1.create_platform( 1000, 30, 230)
-        game.levelisSetup = true;
-    }
-    level1.target_is_destroyed();
-    level1.shooting();
-    level1.UI();
-    level1.isComplete();
-    level1.isGameOver();
-}
-
-function Level2()
-{
-    //setup
-    if (game.levelisSetup == false)
-    {
-        level2 = new level(game.lvl2ShotCount);
-        game.currLvlObj = level2;
-        level2.create_platform( 900, 30, 230)
-        level2.create_platform(1000, 35, 260)
-        level2.create_platform(1100, 40, 290)
-        level2.create_platform(1200, 45, 320)
-        level2.create_platform(1300, 50, 350)
-        level2.create_platform(1400, 55, 380)
-        level2.create_platform(1500, 60, 410)
-        game.levelisSetup = true;
-    }
-    level2.target_is_destroyed();
-    level2.shooting();
-    level2.UI();
-    level2.isComplete();
-    level2.isGameOver();
-}
-
-function Level3()
-{
-    //setup
-    if (game.levelisSetup == false)
-    {
-        level3 = new level(5);
-        game.currLvlObj = level3;
-        level3.create_platform(800 , 40, 200)
-        level3.create_platform(900 , 45, 230)
-        level3.create_platform(1000, 50, 260)
-
-        level3.create_platform(1400, 55, 230)
-        level3.create_platform(1500, 60, 200)
-        game.levelisSetup = true;
-    }
-    level3.target_is_destroyed();
-    level3.shooting();
-    level3.UI();
-    level3.isComplete();
-    level3.isGameOver();
-
-}
-
-//generic level class
-//class level1
-//{
-//    constructor()
-//    {
-//        this.isSetup = false;
-//    }
-//
-//    Setup()
-//    {
-//        if (this.isSetup = false)
-//        {
-//
-//        }
-//    }
-//}
 
 
 
