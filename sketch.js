@@ -9,7 +9,13 @@ function preload()
     ghost2Img    = loadImage('assets/scoreGhost2.png');
     nextLevelImg = loadImage('assets/nextLevel.png'  );
     gameOverImg  = loadImage('assets/gameOver.png'   );
-    pumpkin5     = loadImage('assets/punkins-5.png')
+    pumpkin1     = loadImage('assets/punkins-1.png'  );
+    pumpkin2     = loadImage('assets/punkins-2.png'  );
+    pumpkin3     = loadImage('assets/punkins-3.png'  );
+    pumpkin4     = loadImage('assets/punkins-4.png'  );
+    pumpkin5     = loadImage('assets/punkins-5.png'  );
+    pumpkin6     = loadImage('assets/punkins-6.png'  );
+    pumpkin7     = loadImage('assets/punkins-7.png'  );
 
 
 }
@@ -27,6 +33,7 @@ function setup()
     game.gameState = game.run;
     // straight to level 1 for debug nomrally after title
     game.levelNum++;
+    pumpkins = [pumpkin1,pumpkin2,pumpkin3,pumpkin4,pumpkin5,pumpkin6,pumpkin7]
 }
 
 function draw()
@@ -174,6 +181,8 @@ class level
         this.shotCountSprite.scale = 1.8;
         this.shotCountSprite.offset.y = -5;
         //this.shotScoreSprite = new this.levelSprites.Sprite();
+
+        this.pickedArr = [];
     }
 
     // creates target on top of platform automatically
@@ -188,8 +197,31 @@ class level
     create_target(x,y,d)
     {
         let target = new this.targets.Sprite(x,y);
-        target.img = pumpkin5;
+        target.debug = true
+        var done = false;
+        while (done == false)
+        {   
+            var found = false
+            var i = Math.floor(Math.random() * 7);      
+            for (var j = 0; j < this.pickedArr.length; j++)
+            {
+                if(this.pickedArr[j] == i)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (found == false)
+            {            
+                this.pickedArr.push(i);
+                console.log(this.pickedArr)
+                console.log(i)
+                target.img = pumpkins[i];
+                done = true;
+            }
+        }
         target.d = d;
+        target.ani.scale = d/25;
     }
 
     targets_is_moving()
