@@ -16,8 +16,6 @@ function preload()
     pumpkin5     = loadImage('assets/punkins-5.png'  );
     pumpkin6     = loadImage('assets/punkins-6.png'  );
     pumpkin7     = loadImage('assets/punkins-7.png'  );
-
-
 }
 
 function setup()
@@ -32,7 +30,7 @@ function setup()
     //temp run for debug
     game.gameState = game.run;
     // straight to level 1 for debug nomrally after title
-    game.levelNum++;
+    game.levelNum++; //default game.levelNum++
     pumpkins = [pumpkin1,pumpkin2,pumpkin3,pumpkin4,pumpkin5,pumpkin6,pumpkin7]
 }
 
@@ -63,6 +61,12 @@ function draw()
                 Level3();
                 break;
             }
+
+            case 4:
+            {
+                Level4();
+                break;
+            }
         }
         
     }
@@ -78,23 +82,31 @@ class Shot
     {
         this.shooting = false;
         this.pwrGoingUp = true;
+
         this.originX = (mapW / 6) + 150;
         this.originY = mapH - 100;
         this.d = 25;
+
         this.power = 0;
         this.powerMultiplier = 12;
         this.angle = 0;
+
+        this.r = 0
+        this.g = 200
+
         this.shotSpriteGroup = new Group();
-        this.sprite = new Sprite(this.originX,this.originY,this.d,"k");
+
+        this.sprite = new this.shotSpriteGroup.Sprite(this.originX,this.originY,this.d,"k");
         this.sprite.rotationDrag = 5;
+
         this.sightline = new this.shotSpriteGroup.Sprite(this.originX,this.originY,100,5,"n");
         this.sightline.img = sightlineImg;
         this.sightline.offset.x = -100;
+
         this.sprite.overlaps(this.sightline);
+
         this.barsprite = new this.shotSpriteGroup.Sprite(90,mapH - 75,0.1,25,'n');
         this.barmaxsprite = new this.shotSpriteGroup.Sprite( 290,mapH - 75,5,25,'n');
-        this.r = 0
-        this.g = 200
     }
 
     aim()
@@ -166,10 +178,11 @@ class level
         this.levelSprites = new Group();
 
         this.platforms = new this.levelSprites.Group();
-        this.platforms.mass = 30;
+        this.platforms.mass = 40;
 
         this.targets = new Group();
         this.targets.rotationalDrag = 5;
+        this.targets.mass = 20;
 
         this.floor = new this.levelSprites.Sprite(mapW/2 + 200, mapH + 5, mapW + 500, 5, 's');
 
